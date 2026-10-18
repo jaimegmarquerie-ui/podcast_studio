@@ -35,7 +35,7 @@ Book text  ->  Cleaning (Python)  ->  Script with AI (Gemini)  ->  Voice (Gemini
 1. Clone the repository and enter the folder:
 
    ```bash
-   git clone <REPOSITORY-URL>
+   git clone https://github.com/jaimegmarquerie-ui/podcast_studio.git
    cd podcast_studio
    ```
 
