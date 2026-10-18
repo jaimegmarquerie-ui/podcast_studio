@@ -1,149 +1,152 @@
 # Podcast Studio
 
-**Autor:** Jaime Gárate · Proyecto 1 del bootcamp AI Consulting de Ironhack
+🇪🇸 [Versión en español](README.es.md)
 
-Podcast Studio convierte el texto de un libro (una ficha, una reseña o un guion) en un podcast corto: **pega el texto, elige voz y estilo, y escucha el resultado**. Es una aplicación local con interfaz web hecha con Gradio.
+**Author:** Jaime Gárate · Project 1 of the Ironhack AI Consulting bootcamp
 
-## Qué problema resuelve
+Podcast Studio turns the text of a book (a sheet, a review or a script) into a short podcast: **paste the text, choose a voice and a style, and listen to the result**. It is a local application with a web interface built with Gradio.
 
-Mucha gente no lee porque no sabe qué leer: no sabe qué libro le puede gustar ni por dónde empezar. Elegir a ciegas, a partir de una reseña larga o de una ficha de editorial, cuesta tiempo y esfuerzo. Podcast Studio convierte ese texto en un audio de 2 a 5 minutos, con una voz y un tono que encajan con el libro, para que cualquiera pueda hacerse una idea de qué trata y decidir si quiere leerlo, mientras hace otra cosa.
+## The problem it solves
 
-El caso de uso con el que se ha probado es el podcast ficticio *One Week, One Book*, con el episodio sobre *Death and the Gardener* de Georgi Gospodinov (texto en `examples/mi_guion.txt`).
+Many people don't read because they don't know what to read: they don't know which book they might like or where to start. Choosing blindly, from a long review or a publisher's sheet, takes time and effort. Podcast Studio turns that text into a 2 to 5 minute audio, with a voice and a tone that fit the book, so anyone can get an idea of what it is about and decide whether they want to read it, while doing something else.
 
-## Cómo funciona
+The use case it was tested with is the fictional podcast *One Week, One Book*, with the episode about *Death and the Gardener* by Georgi Gospodinov (text in `examples/mi_guion.txt`).
+
+## How it works
 
 ```
-Texto del libro  ->  Limpieza (Python)  ->  Guion con IA (Gemini)  ->  Voz (Gemini TTS)  ->  Audio
-   (interfaz Gradio)    data_processor        llm_processor              tts_generator
+Book text  ->  Cleaning (Python)  ->  Script with AI (Gemini)  ->  Voice (Gemini TTS)  ->  Audio
+(Gradio UI)      data_processor          llm_processor               tts_generator
 ```
 
-1. **Entrada** (`src/data_processor.py`): lee el texto (pegado o desde un archivo), lo limpia, detecta campos como título o autor y devuelve un diccionario estándar `{"metadata": ..., "text": ..., "word_count": ...}`. Si el texto es demasiado corto, avisa al usuario.
-2. **Transformación** (`src/llm_processor.py`): un modelo de Gemini escribe un guion de podcast en inglés a partir del texto. El usuario elige el estilo (conversacional, reflexivo y literario, o resumen rápido). Las instrucciones piden usar solo información del texto y no inventar datos ni citas.
-3. **Audio** (`src/tts_generator.py`): Gemini TTS convierte el guion en un archivo de audio con la voz elegida (9 voces disponibles). Si falla, la aplicación prueba edge-tts y, como último recurso, gTTS, y muestra qué voz se usó.
-4. **Interfaz** (`src/main.py`): página de Gradio que une los tres pasos y muestra estado, audio y guion.
+1. **Input** (`src/data_processor.py`): reads the text (pasted or from a file), cleans it, detects fields such as title or author and returns a standard dictionary `{"metadata": ..., "text": ..., "word_count": ...}`. If the text is too short, it warns the user.
+2. **Transformation** (`src/llm_processor.py`): a Gemini model writes a podcast script in English from the text. The user chooses the style (conversational, reflective and literary, or quick summary). The instructions ask the model to use only information from the text and not to invent facts or quotes.
+3. **Audio** (`src/tts_generator.py`): Gemini TTS turns the script into an audio file with the chosen voice (9 voices available). If it fails, the app tries edge-tts and, as a last resort, gTTS, and shows which voice was used.
+4. **Interface** (`src/main.py`): a Gradio page that joins the three steps and shows status, audio and script.
 
-## Requisitos
+## Requirements
 
-- Python 3.8 o superior (probado con Python 3.11).
-- Una clave de la API de Gemini (gratuita), que se crea en [Google AI Studio](https://aistudio.google.com/apikey).
-- Conexión a internet.
+- Python 3.8 or higher (tested with Python 3.11).
+- A Gemini API key (free), created in [Google AI Studio](https://aistudio.google.com/apikey).
+- Internet connection.
 
-## Instalación
+## Installation
 
-1. Clona el repositorio y entra en la carpeta:
+1. Clone the repository and enter the folder:
 
    ```bash
-   git clone <URL-DEL-REPOSITORIO>
+   git clone <REPOSITORY-URL>
    cd podcast_studio
    ```
 
-2. Crea y activa un entorno de Python (con conda o con venv). Ejemplo con venv en Windows:
+2. Create and activate a Python environment (with conda or venv). Example with venv on Windows:
 
    ```bash
    python -m venv venv
    venv\Scripts\activate
    ```
 
-3. Instala las dependencias:
+3. Install the dependencies:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-4. Crea un archivo llamado `.env` en la carpeta principal del proyecto con tu clave (el archivo no se sube a GitHub):
+4. Create a file called `.env` in the main project folder with your key (the file is not uploaded to GitHub):
 
    ```
-   GEMINI_API_KEY=tu_clave_aqui
+   GEMINI_API_KEY=your_key_here
    ```
 
-   Puedes comprobar que se lee bien, sin mostrarla, con:
+   You can check that it is read correctly, without displaying it, with:
 
    ```bash
    python src/main.py --check-key
    ```
 
-## Uso
+## Usage
 
-Desde la carpeta principal del proyecto:
+From the main project folder:
 
 ```bash
 python src/main.py
 ```
 
-Abre en el navegador la dirección que aparece en el terminal (normalmente `http://127.0.0.1:7860`) y:
+Open in your browser the address shown in the terminal (usually `http://127.0.0.1:7860`) and:
 
-1. Pega el texto del libro, sube un archivo `.txt`, `.md` o `.pdf`, o carga uno de los dos ejemplos con los botones.
-2. Elige la **voz** y el **estilo y duración**.
-3. Pulsa **Generate podcast** y espera entre 1 y 3 minutos.
-4. Escucha el audio y lee el guion generado. Los archivos se guardan en la carpeta `outputs/`.
+1. Paste the book text, upload a `.txt`, `.md` or `.pdf` file, or load one of the two examples with the buttons.
+2. Choose the **voice** and the **style and length**.
+3. Press **Generate podcast** and wait 1 to 3 minutes.
+4. Listen to the audio and read the generated script. The files are saved in the `outputs/` folder.
 
-Para probar el flujo completo sin abrir la interfaz: `python src/main.py --test`.
+To test the full flow without opening the interface: `python src/main.py --test`.
 
-## Pruebas automáticas
+## Automatic tests
 
-Hay pruebas pequeñas que no necesitan internet ni clave (simulan los servicios externos):
+There are small tests that need neither internet nor a key (they simulate the external services):
 
 ```bash
 python -m unittest discover tests
 ```
 
-Comprueban la lectura de la ficha y de archivos, el rechazo de textos cortos, el contenido del prompt y la cadena de respaldo del audio.
+They check reading the sheet and files, rejecting short texts, the content of the prompt and the audio fallback chain.
 
-## Ejemplo incluido
+## Included example
 
-En la carpeta `examples/`:
+In the `examples/` folder:
 
-| Archivo | Contenido |
+| File | Content |
 |---|---|
-| `mi_guion.txt` | Texto de entrada sobre *Death and the Gardener* |
-| `example_script_death_and_the_gardener.txt` | Guion generado por la IA (estilo reflexivo) |
-| `example_podcast_death_and_the_gardener_sulafat.wav` | Audio generado con la voz Sulafat (unos 4 minutos) |
-| `sample_sheet.txt` | Ficha de ejemplo inventada, para pruebas |
+| `mi_guion.txt` | Input text about *Death and the Gardener* |
+| `example_script_death_and_the_gardener.txt` | Script generated by the AI (reflective style) |
+| `example_podcast_death_and_the_gardener_sulafat.wav` | Audio generated with the Sulafat voice (about 4 minutes) |
+| `sample_sheet.txt` | Invented sample sheet, for testing |
 
-## Decisiones técnicas
+## Technical decisions
 
-- **Gemini para el guion y para la voz:** una sola clave y un solo proveedor para los dos pasos, con nivel gratuito.
-- **Voz cálida por defecto (Sulafat):** el libro de ejemplo trata del duelo y la memoria, y se eligió una voz descrita como cálida y un estilo reflexivo. Se compararon dos voces (Achernar y Sulafat) escuchándolas.
-- **Cadena de respaldo para el audio:** los servicios de voz pueden fallar. Si Gemini TTS no responde, se usa edge-tts y después gTTS, y la interfaz indica qué voz se usó.
-- **Errores controlados:** cada paso del flujo tiene su propio `try/except`. El usuario ve un mensaje claro en el campo *Status* (texto demasiado corto, fallo de la IA, fallo del audio) en lugar de que la aplicación se rompa.
-- **Estructuras de datos:** diccionarios para la ficha y para las listas de voces y estilos.
+- **Gemini for the script and for the voice:** a single key and a single provider for both steps, with a free tier.
+- **Warm default voice (Sulafat):** the example book is about grief and memory, so a voice described as warm and a reflective style were chosen. Two voices (Achernar and Sulafat) were compared by listening to them.
+- **Fallback chain for the audio:** voice services can fail. If Gemini TTS does not respond, edge-tts is used and then gTTS, and the interface shows which voice was used.
+- **Controlled errors:** each step of the flow has its own `try/except`. The user sees a clear message in the *Status* field (text too short, AI failure, audio failure) instead of the application breaking.
+- **Data structures:** dictionaries for the sheet and for the lists of voices and styles.
 
-## Costes y límites
+## Costs and limits
 
-- **Gemini API (guion y voz):** se usa el nivel gratuito. En ese nivel, Google puede usar el contenido enviado para mejorar sus productos; conviene no pegar datos privados. Los límites exactos de peticiones del nivel gratuito para voz no se han verificado.
-- edge-tts y gTTS son servicios gratuitos y no oficiales que pueden fallar o cambiar sin aviso. En las pruebas, edge-tts devolvió un error 403, y por eso es solo un respaldo.
-- El audio de Gemini TTS se guarda en formato WAV (24 kHz, mono), que pesa más que un MP3.
+- **Gemini API (script and voice):** the free tier is used. On that tier, Google may use the submitted content to improve its products, so it is best not to paste private data. The exact free-tier request limits for voice have not been verified.
+- edge-tts and gTTS are free, unofficial services that may fail or change without notice. In testing, edge-tts returned a 403 error, which is why it is only a backup.
+- Gemini TTS audio is saved as WAV (24 kHz, mono), which is larger than an MP3.
 
-## Limitaciones
+## Limitations
 
-- El guion se genera siempre en inglés, aunque el texto de entrada esté en otro idioma.
-- La aplicación es local; no está desplegada en internet.
-- Acepta texto pegado o archivos `.txt`, `.md` y `.pdf` con texto. Los PDF escaneados (imágenes) y las direcciones web no están soportados.
-- La interfaz está hecha solo con Gradio (sin servidor aparte con FastAPI).
+- The script is always generated in English, even if the input text is in another language.
+- The application is local; it is not deployed online.
+- It accepts pasted text or `.txt`, `.md` and `.pdf` files containing text. Scanned PDFs (images) and web addresses are not supported.
+- The interface is built with Gradio only (no separate FastAPI server).
 
-## Estructura del proyecto
+## Project structure
 
 ```
 podcast_studio/
 ├── src/
-│   ├── data_processor.py   # entrada (texto, .txt, .md, .pdf) y limpieza
-│   ├── llm_processor.py    # guion con Gemini
-│   ├── tts_generator.py    # voz con Gemini TTS y respaldos
-│   └── main.py             # flujo completo e interfaz Gradio
-├── tests/                  # pruebas automáticas
-├── examples/               # textos y audio de ejemplo
+│   ├── data_processor.py   # input (text, .txt, .md, .pdf) and cleaning
+│   ├── llm_processor.py    # script with Gemini
+│   ├── tts_generator.py    # voice with Gemini TTS and backups
+│   └── main.py             # full flow and Gradio interface
+├── tests/                  # automatic tests
+├── examples/               # example texts and audio
 ├── requirements.txt
-├── README.md
-└── .env                    # clave de la API (no se sube a GitHub)
+├── README.md               # English version
+├── README.es.md            # Spanish version
+└── .env                    # API key (not uploaded to GitHub)
 ```
 
-## Mejoras futuras
+## Future improvements
 
-- Aceptar direcciones web y PDF escaneados (con OCR) como entrada.
-- Guiones en más idiomas y voces para cada uno.
-- Convertir el audio final a MP3 para que pese menos.
-- Dos voces conversando, como en un podcast de dos presentadores.
+- Accept web addresses and scanned PDFs (with OCR) as input.
+- Scripts in more languages, with voices for each.
+- Convert the final audio to MP3 so it weighs less.
+- Two voices talking, like a podcast with two hosts.
 
-## Nota sobre el desarrollo
+## Note on development
 
-El proyecto se desarrolló con la ayuda de un asistente de IA (Claude) como tutor y apoyo de programación, y todas las pruebas se hicieron en mi equipo con mi propio texto del libro.
+The project was developed with the help of an AI assistant (Claude) as a tutor and programming support, and all tests were run on my own computer with my own text of the book.
