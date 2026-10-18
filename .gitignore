@@ -1,0 +1,12 @@
+# Secrets: never commit the API key
+.env
+
+# Editor and Python files
+.vscode/
+__pycache__/
+*.pyc
+venv/
+
+# Generated audio (the example audio lives in examples/)
+outputs/
+salidas/
